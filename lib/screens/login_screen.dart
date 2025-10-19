@@ -1,25 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../utils/colors.dart';
+import '../providers/auth_provider.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+    final isButtonEnabled = ref.watch(isLoginButtonEnabledProvider);
 
-class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _phoneController = TextEditingController();
-
-  @override
-  void dispose() {
-    _phoneController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.darkBackground,
       body: SafeArea(
@@ -59,13 +51,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 40),
 
                   // Placeholder for 3D illustration
-                  // You'll need to add the actual illustration image
-                  Container(
+                  SizedBox(
                     height: 200,
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
-                        // Placeholder for the 3D pins illustration
                         Icon(
                           Icons.location_on,
                           size: 100,
@@ -120,27 +110,20 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Row(
                         children: [
                           // Country flag and code
-                          Image.asset(
-                            'assets/images/india_flag.png',
-                            width: 24,
-                            height: 16,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Text(
-                                '🇮🇳',
-                                style: TextStyle(fontSize: 20),
-                              );
-                            },
+                          const Text(
+                            '🇮🇳',
+                            style: TextStyle(fontSize: 20),
                           ),
                           const SizedBox(width: 8),
-                          const Text(
-                            '+91',
-                            style: TextStyle(
+                          Text(
+                            authState.countryCode,
+                            style: const TextStyle(
                               color: AppColors.white,
                               fontSize: 16,
                             ),
                           ),
                           const SizedBox(width: 8),
-                          Icon(
+                          const Icon(
                             Icons.arrow_drop_down,
                             color: AppColors.textSecondary,
                           ),
@@ -149,7 +132,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           // Phone number field
                           Expanded(
                             child: TextField(
-                              controller: _phoneController,
+                              onChanged: (value) {
+                                ref.read(authProvider.notifier).updatePhoneNumber(value);
+                              },
                               keyboardType: TextInputType.phone,
                               style: const TextStyle(
                                 color: AppColors.white,
@@ -179,31 +164,47 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: () {
-                          // Handle continue action
-                          if (_phoneController.text.length == 10) {
-                            // Navigate to OTP screen or next step
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Phone number submitted!'),
-                              ),
-                            );
-                          }
-                        },
+                        onPressed: authState.isLoading
+                            ? null
+                            : (isButtonEnabled
+                                ? () async {
+                                    await ref.read(authProvider.notifier).submitPhoneNumber();
+                                    if (context.mounted) {
+                                      final currentAuthState = ref.read(authProvider);
+                                      if (currentAuthState.isAuthenticated) {
+                                        Navigator.pushReplacementNamed(context, '/home');
+                                      }
+                                    }
+                                  }
+                                : null),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.buttonGrey,
+                          backgroundColor: isButtonEnabled
+                              ? AppColors.primaryPurple
+                              : AppColors.buttonGrey,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
+                          disabledBackgroundColor: AppColors.buttonGrey,
                         ),
-                        child: const Text(
-                          'Continue',
-                          style: TextStyle(
-                            color: AppColors.textSecondary,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                        child: authState.isLoading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: AppColors.white,
+                                ),
+                              )
+                            : Text(
+                                'Continue',
+                                style: TextStyle(
+                                  color: isButtonEnabled
+                                      ? AppColors.white
+                                      : AppColors.textSecondary,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -211,13 +212,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Terms and privacy text
                     RichText(
                       textAlign: TextAlign.center,
-                      text: TextSpan(
-                        style: const TextStyle(
+                      text: const TextSpan(
+                        style: TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 12,
                         ),
                         children: [
-                          const TextSpan(text: 'By continuing, you agree to our\n'),
+                          TextSpan(text: 'By continuing, you agree to our\n'),
                           TextSpan(
                             text: 'Terms of Services',
                             style: TextStyle(
@@ -225,7 +226,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               decoration: TextDecoration.underline,
                             ),
                           ),
-                          const TextSpan(text: '     '),
+                          TextSpan(text: '     '),
                           TextSpan(
                             text: 'Privacy Policy',
                             style: TextStyle(
