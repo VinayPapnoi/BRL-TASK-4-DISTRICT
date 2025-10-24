@@ -23,6 +23,7 @@ dev_dependencies:
 
 flutter:
   assets:
-    - assets/images/place.png
+    - assets/images/
+  
 
   uses-material-design: true
