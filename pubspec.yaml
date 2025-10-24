@@ -10,6 +10,7 @@ environment:
 
 dependencies:
   cupertino_icons: ^1.0.8
+  lottie: ^1.2.1
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.4.9
@@ -22,6 +23,6 @@ dev_dependencies:
 
 flutter:
   assets:
-    - assets/images/district_logo.png
+    - assets/images/place.png
 
   uses-material-design: true
