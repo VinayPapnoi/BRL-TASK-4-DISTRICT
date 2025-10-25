@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:location/location.dart';
+import 'package:geocoder/geocoder.dart';
 import '../providers/auth_provider.dart';
 import '../utils/colors.dart';
+
+String _city = "Loading...";
+String _country = "";
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -13,6 +18,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   int _selectedTabIndex = 0;
+
   final List<String> _tabs = [
     'FOR YOU',
     'DINING',
@@ -22,7 +28,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     'ACTIVITIES',
   ];
 
-  // Colors for each tab
   final List<Color> _tabColors = [
     AppColors.forYouPurple,
     AppColors.diningRed,
@@ -32,7 +37,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     AppColors.activitiesOrange,
   ];
 
-  // Search hints for each tab
   final List<String> _searchHints = [
     'Search for events, movies, restaurants...',
     'Search for restaurants, cuisines, dishes...',
@@ -41,6 +45,62 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     'Search for products, brands, stores...',
     'Search for activities, experiences, fun...',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserLocation(); // fetch location when screen opens
+  }
+
+  Future<void> _getUserLocation() async {
+    Location location = Location();
+    LocationData? myLocation;
+
+    try {
+      bool serviceEnabled = await location.serviceEnabled();
+      if (!serviceEnabled) {
+        serviceEnabled = await location.requestService();
+        if (!serviceEnabled) {
+          setState(() {
+            _city = "Location Off";
+            _country = "";
+          });
+          return;
+        }
+      }
+
+      PermissionStatus permissionGranted = await location.hasPermission();
+      if (permissionGranted == PermissionStatus.denied) {
+        permissionGranted = await location.requestPermission();
+        if (permissionGranted != PermissionStatus.granted) {
+          setState(() {
+            _city = "Permission Denied";
+            _country = "";
+          });
+          return;
+        }
+      }
+
+      myLocation = await location.getLocation();
+
+      final coordinates =
+          Coordinates(myLocation.latitude, myLocation.longitude);
+      var addresses =
+          await Geocoder.local.findAddressesFromCoordinates(coordinates);
+      var first = addresses.first;
+
+      setState(() {
+        _city = first.locality ?? 'Unknown';
+        _country = first.adminArea ?? '';
+      });
+    } on Exception catch (e) {
+      setState(() {
+        _city = "Error";
+        _country = "";
+      });
+      print("Location error: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,10 +141,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               children: [
                 // Top location bar
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -101,24 +159,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
-                                children: const [
+                                children: [
                                   Text(
-                                    'Ghaziabad',
-                                    style: TextStyle(
+                                    _city,
+                                    style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  Icon(
+                                  const Icon(
                                     Icons.keyboard_arrow_down,
                                     color: Colors.white,
                                     size: 20,
                                   ),
                                 ],
                               ),
-                              const Text(
-                                'India',
+                              Text(
+                                _country,
                                 style: TextStyle(
                                   color: Colors.grey,
                                   fontSize: 12,
@@ -144,10 +202,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
                 // Search bar
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Container(
                     decoration: BoxDecoration(
                       color: const Color(0xFF2A2A2A),
@@ -166,20 +222,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           color: Colors.grey.shade500,
                         ),
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 12,
-                        ),
+                        contentPadding:
+                            const EdgeInsets.symmetric(vertical: 12),
                       ),
                     ),
                   ),
                 ),
 
-                // Buttons ki row
+                // Buttons row
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   height: screenHeight * 0.1,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -203,10 +256,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           },
                           child: Container(
                             margin: const EdgeInsets.symmetric(horizontal: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.circular(0),
-                            ),
+                            color: Colors.transparent,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -232,7 +282,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   ),
                                 ),
                                 SizedBox(height: screenHeight * 0.005),
-                                // Small line indicator below text
                                 Container(
                                   height: 2,
                                   width: screenWidth * 0.08,
@@ -249,12 +298,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 ),
 
-                // Content area with placeholder cards
+                // Content area
                 Expanded(
                   child: ListView(
                     padding: const EdgeInsets.all(16),
                     children: [
-                      // Large featured card
                       Container(
                         height: 200,
                         decoration: BoxDecoration(
@@ -269,8 +317,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
-
-                      // Two horizontal cards
                       Row(
                         children: [
                           Expanded(
@@ -297,8 +343,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ],
                       ),
                       const SizedBox(height: 16),
-
-                      // List items
                       ...List.generate(3, (index) {
                         return Container(
                           height: 80,
