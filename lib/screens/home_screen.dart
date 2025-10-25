@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../providers/auth_provider.dart';
 import '../utils/colors.dart';
+
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -185,10 +187,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     children: List.generate(_tabs.length, (index) {
                       final isSelected = _selectedTabIndex == index;
                       final icons = [
-                        Icons.celebration,
+                        FontAwesomeIcons.wandMagicSparkles,
                         Icons.restaurant,
-                        Icons.event,
-                        Icons.movie,
+                        FontAwesomeIcons.guitar,
+                        FontAwesomeIcons.clapperboard,
                         Icons.shopping_bag,
                         Icons.local_activity,
                       ];
