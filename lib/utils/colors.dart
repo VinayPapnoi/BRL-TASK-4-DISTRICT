@@ -19,4 +19,12 @@ class AppColors {
   // Button colors
   static const Color buttonGrey = Color(0xFF3A3A4A);
   static const Color buttonDisabled = Color(0xFF4A4A5A);
+  
+  // Tab colors for home screen
+  static const Color forYouPurple = Color.fromRGBO(55, 26, 166, 1);
+  static const Color diningRed = Color(0xFFEF4444);
+  static const Color eventsYellow = Color(0xFFFBBF24);
+  static const Color moviesBlue = Color(0xFF3B82F6);
+  static const Color storesGreen = Color(0xFF10B981);
+  static const Color activitiesOrange = Color(0xFFF97316);
 }
