@@ -21,7 +21,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     'ACTIVITIES',
   ];
 
-  // Colors for each tab (STORES color added)
+  // Colors for each tab 
   final List<Color> _tabColors = [
     AppColors.forYouPurple,
     AppColors.diningRed,
@@ -29,6 +29,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     AppColors.moviesBlue,
     AppColors.storesGreen,
     AppColors.activitiesOrange,
+  ];
+
+  // Search hints for each tab
+  final List<String> _searchHints = [
+    'Search for events, movies, restaurants...',
+    'Search for restaurants, cuisines, dishes...',
+    'Search for concerts, shows, exhibitions...',
+    'Search for movies, showtimes, theaters...',
+    'Search for products, brands, stores...',
+    'Search for activities, experiences, fun...',
   ];
 
   @override
@@ -145,7 +155,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     child: TextField(
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
-                        hintText: 'Search for "South Indian Spots"',
+                        hintText: _searchHints[_selectedTabIndex],
                         hintStyle: TextStyle(
                           color: Colors.grey.shade500,
                           fontSize: 14,
@@ -163,7 +173,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 ),
 
-                // Buttons ki row 
+                // Buttons row (responsive, all fit)
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
