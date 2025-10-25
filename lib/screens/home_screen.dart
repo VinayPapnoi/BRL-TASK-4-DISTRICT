@@ -4,7 +4,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../providers/auth_provider.dart';
 import '../utils/colors.dart';
 
-
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -23,7 +22,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     'ACTIVITIES',
   ];
 
-  // Colors for each tab 
+  // Colors for each tab
   final List<Color> _tabColors = [
     AppColors.forYouPurple,
     AppColors.diningRed,
@@ -54,13 +53,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           // Full dark background
           Container(color: const Color(0xFF000000)),
 
-          // Top gradient (wider and more subtle)
+          // Top gradient
           Positioned(
             top: 0,
             left: 0,
             right: 0,
             child: Container(
-              height: screenHeight * 0.35,
+              height: screenHeight * 0.25,
               decoration: BoxDecoration(
                 gradient: RadialGradient(
                   center: Alignment.topCenter,
@@ -175,7 +174,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 ),
 
-                // Buttons row (responsive, all fit)
+                // Buttons ki row
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
