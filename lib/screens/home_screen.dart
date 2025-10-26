@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:location/location.dart' as loc;
 import 'package:geocoding/geocoding.dart';
-
+import 'profile_screen.dart';
 import '../providers/auth_provider.dart';
 import '../utils/colors.dart';
 
@@ -29,7 +29,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     'ACTIVITIES',
   ];
 
-  // Colors for each tab
   final List<Color> _tabColors = [
     AppColors.forYouPurple,
     AppColors.diningRed,
@@ -39,7 +38,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     AppColors.activitiesOrange,
   ];
 
-  // Search hints for each tab
   final List<String> _searchHints = [
     'Search for events, movies, restaurants...',
     'Search for restaurants, cuisines, dishes...',
@@ -58,7 +56,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Future<void> _getUserLocation() async {
     try {
       loc.Location location = loc.Location();
-
       bool serviceEnabled = await location.serviceEnabled();
       if (!serviceEnabled) {
         serviceEnabled = await location.requestService();
@@ -83,10 +80,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         }
       }
 
-      // Get current GPS coordinates
       loc.LocationData myLocation = await location.getLocation();
 
-      // Reverse geocoding
       List<Placemark> placemarks = await placemarkFromCoordinates(
         myLocation.latitude!,
         myLocation.longitude!,
@@ -94,11 +89,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks.first;
-
-        // For top line: locality/neighborhood name
         String topLine = place.subLocality ?? place.name ?? "Unknown";
-
-        // For second line: nearby locality details
         String bottomLine = [
           if (place.street != null && place.street!.isNotEmpty) place.street,
           if (place.locality != null && place.locality!.isNotEmpty)
@@ -109,22 +100,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ].join(', ');
 
         setState(() {
-          _city = topLine; // 👈 Will show “Shanti Nagar”
-          _country =
-              bottomLine; // 👈 Will show “Jeera Nagar, Sector 11, Gurugram”
+          _city = topLine;
+          _country = bottomLine;
         });
-
-        // Optional: debug print to see full data
-        debugPrint("""
-📍 Location Details:
-Name: ${place.name}
-Street: ${place.street}
-SubLocality: ${place.subLocality}
-Locality: ${place.locality}
-SubAdministrativeArea: ${place.subAdministrativeArea}
-AdministrativeArea: ${place.administrativeArea}
-Country: ${place.country}
-""");
       }
     } catch (e) {
       debugPrint("Error getting location: $e");
@@ -143,7 +121,6 @@ Country: ${place.country}
     return Scaffold(
       body: Stack(
         children: [
-          // Full dark background
           Container(color: const Color(0xFF000000)),
 
           // Top gradient
@@ -168,27 +145,18 @@ Country: ${place.country}
             ),
           ),
 
-          // Main content
           SafeArea(
             child: Column(
               children: [
                 // Top location bar
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Location info
                       Row(
                         children: [
-                          const Icon(
-                            Icons.location_on,
-                            color: Colors.white,
-                            size: 20,
-                          ),
+                          const Icon(Icons.location_on, color: Colors.white, size: 20),
                           const SizedBox(width: 4),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -204,11 +172,8 @@ Country: ${place.country}
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  const Icon(
-                                    Icons.keyboard_arrow_down,
-                                    color: Colors.white,
-                                    size: 20,
-                                  ),
+                                  const Icon(Icons.keyboard_arrow_down,
+                                      color: Colors.white, size: 20),
                                 ],
                               ),
                               Text(
@@ -222,14 +187,21 @@ Country: ${place.country}
                           ),
                         ],
                       ),
+
                       // Profile icon
-                      CircleAvatar(
-                        radius: 18,
-                        backgroundColor: Colors.grey.shade800,
-                        child: const Icon(
-                          Icons.person,
-                          color: Colors.white,
-                          size: 20,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ProfileScreen(),
+                            ),
+                          );
+                        },
+                        child: CircleAvatar(
+                          radius: 18,
+                          backgroundColor: Colors.grey.shade800,
+                          child: const Icon(Icons.person, color: Colors.white, size: 20),
                         ),
                       ),
                     ],
@@ -238,10 +210,7 @@ Country: ${place.country}
 
                 // Search bar
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Container(
                     decoration: BoxDecoration(
                       color: const Color(0xFF2A2A2A),
@@ -251,30 +220,18 @@ Country: ${place.country}
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         hintText: _searchHints[_selectedTabIndex],
-                        hintStyle: TextStyle(
-                          color: Colors.grey.shade500,
-                          fontSize: 14,
-                        ),
-                        prefixIcon: Icon(
-                          Icons.search,
-                          color: Colors.grey.shade500,
-                        ),
+                        hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14),
+                        prefixIcon: Icon(Icons.search, color: Colors.grey.shade500),
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 12,
-                        ),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                     ),
                   ),
                 ),
 
-                // Tabs row
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  height: screenHeight * 0.1,
+                // Tabs row (updated)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: List.generate(_tabs.length, (index) {
@@ -290,48 +247,30 @@ Country: ${place.country}
 
                       return Expanded(
                         child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _selectedTabIndex = index;
-                            });
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.circular(0),
-                            ),
+                          onTap: () => setState(() => _selectedTabIndex = index),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(
-                                  icons[index],
-                                  size: screenWidth * 0.08,
-                                  color: isSelected
-                                      ? _tabColors[index]
-                                      : Colors.grey,
-                                ),
+                                Icon(icons[index],
+                                    size: screenWidth * 0.08,
+                                    color: isSelected ? _tabColors[index] : Colors.grey),
                                 SizedBox(height: screenHeight * 0.01),
-                                FittedBox(
-                                  child: Text(
-                                    _tabs[index],
-                                    style: TextStyle(
-                                      color: isSelected
-                                          ? _tabColors[index]
-                                          : Colors.grey.shade400,
-                                      fontSize: screenWidth * 0.03,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                    textAlign: TextAlign.center,
+                                Text(
+                                  _tabs[index],
+                                  style: TextStyle(
+                                    color: isSelected ? _tabColors[index] : Colors.grey.shade400,
+                                    fontSize: screenWidth * 0.03,
+                                    fontWeight: FontWeight.w600,
                                   ),
+                                  textAlign: TextAlign.center,
                                 ),
                                 SizedBox(height: screenHeight * 0.005),
                                 Container(
                                   height: 2,
                                   width: screenWidth * 0.08,
-                                  color: isSelected
-                                      ? _tabColors[index]
-                                      : Colors.transparent,
+                                  color: isSelected ? _tabColors[index] : Colors.transparent,
                                 ),
                               ],
                             ),
@@ -342,7 +281,7 @@ Country: ${place.country}
                   ),
                 ),
 
-                // Content area with placeholder cards
+                // Content area
                 Expanded(
                   child: ListView(
                     padding: const EdgeInsets.all(16),
@@ -354,10 +293,8 @@ Country: ${place.country}
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Center(
-                          child: Text(
-                            'Featured Content',
-                            style: TextStyle(color: Colors.grey, fontSize: 16),
-                          ),
+                          child: Text('Featured Content',
+                              style: TextStyle(color: Colors.grey, fontSize: 16)),
                         ),
                       ),
                       const SizedBox(height: 16),
