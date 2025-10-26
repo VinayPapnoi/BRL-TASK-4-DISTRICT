@@ -59,7 +59,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     try {
       loc.Location location = loc.Location();
 
-      // Check if service is enabled
       bool serviceEnabled = await location.serviceEnabled();
       if (!serviceEnabled) {
         serviceEnabled = await location.requestService();
@@ -72,7 +71,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         }
       }
 
-      // Check permission
       loc.PermissionStatus permissionGranted = await location.hasPermission();
       if (permissionGranted == loc.PermissionStatus.denied) {
         permissionGranted = await location.requestPermission();
@@ -85,10 +83,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         }
       }
 
-      // Get location data
+      // Get current GPS coordinates
       loc.LocationData myLocation = await location.getLocation();
 
-      // Reverse geocoding to get city & country
+      // Reverse geocoding
       List<Placemark> placemarks = await placemarkFromCoordinates(
         myLocation.latitude!,
         myLocation.longitude!,
@@ -96,13 +94,40 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks.first;
+
+        // For top line: locality/neighborhood name
+        String topLine = place.subLocality ?? place.name ?? "Unknown";
+
+        // For second line: nearby locality details
+        String bottomLine = [
+          if (place.street != null && place.street!.isNotEmpty) place.street,
+          if (place.locality != null && place.locality!.isNotEmpty)
+            place.locality,
+          if (place.subAdministrativeArea != null &&
+              place.subAdministrativeArea!.isNotEmpty)
+            place.subAdministrativeArea,
+        ].join(', ');
+
         setState(() {
-          _city = place.locality ?? "Unknown";
-          _country = place.country ?? "";
+          _city = topLine; // 👈 Will show “Shanti Nagar”
+          _country =
+              bottomLine; // 👈 Will show “Jeera Nagar, Sector 11, Gurugram”
         });
+
+        // Optional: debug print to see full data
+        debugPrint("""
+📍 Location Details:
+Name: ${place.name}
+Street: ${place.street}
+SubLocality: ${place.subLocality}
+Locality: ${place.locality}
+SubAdministrativeArea: ${place.subAdministrativeArea}
+AdministrativeArea: ${place.administrativeArea}
+Country: ${place.country}
+""");
       }
     } catch (e) {
-      print("Error getting location: $e");
+      debugPrint("Error getting location: $e");
       setState(() {
         _city = "Error";
         _country = "";
@@ -172,6 +197,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 children: [
                                   Text(
                                     _city,
+                                    overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 16,
