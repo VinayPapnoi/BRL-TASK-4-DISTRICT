@@ -69,86 +69,65 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     _getUserLocation();
   }
 
-Future<void> _getUserLocation() async {
-  try {
-    loc.Location location = loc.Location();
-
-    bool serviceEnabled = await location.serviceEnabled();
-    if (!serviceEnabled) {
-      serviceEnabled = await location.requestService();
+  Future<void> _getUserLocation() async {
+    try {
+      loc.Location location = loc.Location();
+      bool serviceEnabled = await location.serviceEnabled();
       if (!serviceEnabled) {
-        setState(() {
-          _city = "Location Off";
-          _country = "";
-        });
-        return;
+        serviceEnabled = await location.requestService();
+        if (!serviceEnabled) {
+          setState(() {
+            _city = "Location Off";
+            _country = "";
+          });
+          return;
+        }
       }
-    }
 
-    loc.PermissionStatus permissionGranted = await location.hasPermission();
-    if (permissionGranted == loc.PermissionStatus.denied) {
-      permissionGranted = await location.requestPermission();
-      if (permissionGranted != loc.PermissionStatus.granted) {
-        setState(() {
-          _city = "Unknown";
-          _country = "";
-        });
-        return;
+      loc.PermissionStatus permissionGranted = await location.hasPermission();
+      if (permissionGranted == loc.PermissionStatus.denied) {
+        permissionGranted = await location.requestPermission();
+        if (permissionGranted != loc.PermissionStatus.granted) {
+          setState(() {
+            _city = "Unknown";
+            _country = "";
+          });
+          return;
+        }
       }
-    }
 
-    // ✅ Get current location
-    loc.LocationData myLocation = await location.getLocation();
-    double lat = myLocation.latitude!;
-    double lon = myLocation.longitude!;
+      loc.LocationData myLocation = await location.getLocation();
 
-    debugPrint("📍 Latitude: $lat");
-    debugPrint("📍 Longitude: $lon");
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        myLocation.latitude!,
+        myLocation.longitude!,
+      );
 
-    // ✅ Get full placemark info
-    List<Placemark> placemarks = await placemarkFromCoordinates(lat, lon);
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks.first;
+        String topLine = place.subLocality ?? place.name ?? "Unknown";
+        String bottomLine = [
+          if (place.street != null && place.street!.isNotEmpty) place.street,
+          if (place.locality != null && place.locality!.isNotEmpty)
+            place.locality,
+          if (place.subAdministrativeArea != null &&
+              place.subAdministrativeArea!.isNotEmpty)
+            place.subAdministrativeArea,
+        ].join(', ');
 
-    if (placemarks.isNotEmpty) {
-      Placemark place = placemarks.first;
-
-      // ✅ Print all available geocoding fields
-      debugPrint("------ 🌍 Full Location Details ------");
-      debugPrint("Name: ${place.name}");
-      debugPrint("Street: ${place.street}");
-      debugPrint("SubLocality: ${place.subLocality}");
-      debugPrint("Locality (City): ${place.locality}");
-      debugPrint("SubAdministrativeArea (District): ${place.subAdministrativeArea}");
-      debugPrint("AdministrativeArea (State): ${place.administrativeArea}");
-      debugPrint("PostalCode: ${place.postalCode}");
-      debugPrint("Country: ${place.country}");
-      debugPrint("ISO Country Code: ${place.isoCountryCode}");
-      debugPrint("Thoroughfare: ${place.thoroughfare}");
-      debugPrint("SubThoroughfare: ${place.subThoroughfare}");
-      debugPrint("--------------------------------------");
-
-      String topLine = place.subLocality ?? place.name ?? "Unknown";
-      String bottomLine = [
-        if (place.street != null && place.street!.isNotEmpty) place.street,
-        if (place.locality != null && place.locality!.isNotEmpty) place.locality,
-        if (place.subAdministrativeArea != null &&
-            place.subAdministrativeArea!.isNotEmpty)
-          place.subAdministrativeArea,
-      ].join(', ');
-
+        setState(() {
+          _city = topLine;
+          _country = bottomLine;
+        });
+      }
+    } catch (e) {
+      debugPrint("Error getting location: $e");
       setState(() {
-        _city = topLine;
-        _country = bottomLine;
+        _city = "Error";
+        _country = "";
       });
     }
-  } catch (e) {
-    debugPrint("❌ Error getting location: $e");
-    setState(() {
-      _city = "Error";
-      _country = "";
-    });
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
