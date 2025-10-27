@@ -4,6 +4,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../providers/auth_provider.dart';
 import '../utils/colors.dart';
 
+import 'sub_screens/dining_page.dart';
+import 'sub_screens/events_page.dart';
+import 'sub_screens/for_you_page.dart';
+import 'sub_screens/movie_page.dart';
+
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -18,8 +23,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     'DINING',
     'EVENTS',
     'MOVIES',
-    'STORES',
-    'ACTIVITIES',
+    
+    
   ];
 
   // Colors for each tab
@@ -28,9 +33,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     AppColors.diningRed,
     AppColors.eventsYellow,
     AppColors.moviesBlue,
-    AppColors.storesGreen,
-    AppColors.activitiesOrange,
+    
+    
   ];
+  
+
+  final List<Widget> _pages = [
+  ForYouPage(),
+  DiningPage(),
+  EventsPage(),
+  MoviesPage(),
+  
+  
+];
+
 
   // Search hints for each tab
   final List<String> _searchHints = [
@@ -38,8 +54,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     'Search for restaurants, cuisines, dishes...',
     'Search for concerts, shows, exhibitions...',
     'Search for movies, showtimes, theaters...',
-    'Search for products, brands, stores...',
-    'Search for activities, experiences, fun...',
+    
+    
   ];
 
   @override
@@ -48,7 +64,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+        
+
       body: Stack(
+       
+        
         children: [
           // Full dark background
           Container(color: const Color(0xFF000000)),
@@ -248,70 +268,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     }),
                   ),
                 ),
-
-                // Content area with placeholder cards
-                Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.all(16),
-                    children: [
-                      // Large featured card
-                      Container(
-                        height: 200,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF2A2A2A),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Center(
-                          child: Text(
-                            'Featured Content',
-                            style: TextStyle(color: Colors.grey, fontSize: 16),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Two horizontal cards
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: Container(
-                              height: 100,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF2A2A2A),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            flex: 1,
-                            child: Container(
-                              height: 100,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF2A2A2A),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-
-                      // List items
-                      ...List.generate(3, (index) {
-                        return Container(
-                          height: 80,
-                          margin: const EdgeInsets.only(bottom: 12),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF2A2A2A),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        );
-                      }),
-                    ],
-                  ),
+               Expanded(
+                child: IndexedStack(
+                   index: _selectedTabIndex,
+                   children:_pages,
+                   ),
                 ),
+               
               ],
             ),
           ),
