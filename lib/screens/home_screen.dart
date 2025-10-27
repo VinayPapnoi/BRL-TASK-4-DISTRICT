@@ -33,7 +33,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     'MOVIES',
     'STORES',
     'ACTIVITIES',
-    
   ];
 
   final List<Color> _tabColors = [
@@ -43,29 +42,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     AppColors.moviesBlue,
     AppColors.storesGreen,
     AppColors.activitiesOrange,
-    
   ];
-  
 
   final List<Widget> _pages = [
-  ForYouPage(),
-  DiningPage(),
-  EventsPage(),
-  MoviesPage(),
-  StoresPage(), 
-  ActivitiesPage()
-  
-];
-
+    ForYouPage(),
+    DiningPage(),
+    EventsPage(),
+    MoviesPage(),
+    StoresPage(),
+    ActivitiesPage(),
+  ];
 
   final List<String> _searchHints = [
     'Search for events, movies, restaurants...',
     'Search for restaurants, cuisines, dishes...',
     'Search for concerts, shows, exhibitions...',
     'Search for movies, showtimes, theaters...',
-    'Search for products, brands, stores...', 
+    'Search for products, brands, stores...',
     'Search for activities, experiences, fun...',
-    
   ];
 
   @override
@@ -74,86 +68,70 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     _getUserLocation();
   }
 
-Future<void> _getUserLocation() async {
-  try {
-    loc.Location location = loc.Location();
+  Future<void> _getUserLocation() async {
+    try {
+      loc.Location location = loc.Location();
 
-    bool serviceEnabled = await location.serviceEnabled();
-    if (!serviceEnabled) {
-      serviceEnabled = await location.requestService();
+      bool serviceEnabled = await location.serviceEnabled();
       if (!serviceEnabled) {
-        setState(() {
-          _city = "Location Off";
-          _country = "";
-        });
-        return;
+        serviceEnabled = await location.requestService();
+        if (!serviceEnabled) {
+          setState(() {
+            _city = "Location Off";
+            _country = "";
+          });
+          return;
+        }
       }
-    }
 
-    loc.PermissionStatus permissionGranted = await location.hasPermission();
-    if (permissionGranted == loc.PermissionStatus.denied) {
-      permissionGranted = await location.requestPermission();
-      if (permissionGranted != loc.PermissionStatus.granted) {
-        setState(() {
-          _city = "Unknown";
-          _country = "";
-        });
-        return;
+      loc.PermissionStatus permissionGranted = await location.hasPermission();
+      if (permissionGranted == loc.PermissionStatus.denied) {
+        permissionGranted = await location.requestPermission();
+        if (permissionGranted != loc.PermissionStatus.granted) {
+          setState(() {
+            _city = "Unknown";
+            _country = "";
+          });
+          return;
+        }
       }
-    }
 
-    // ✅ Get current location
-    loc.LocationData myLocation = await location.getLocation();
-    double lat = myLocation.latitude!;
-    double lon = myLocation.longitude!;
+      // ✅ Get current location
+      loc.LocationData myLocation = await location.getLocation();
+      double lat = myLocation.latitude!;
+      double lon = myLocation.longitude!;
 
-    debugPrint("📍 Latitude: $lat");
-    debugPrint("📍 Longitude: $lon");
+      // ✅ Get full placemark info
+      List<Placemark> placemarks = await placemarkFromCoordinates(lat, lon);
 
-    // ✅ Get full placemark info
-    List<Placemark> placemarks = await placemarkFromCoordinates(lat, lon);
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks.first;
 
-    if (placemarks.isNotEmpty) {
-      Placemark place = placemarks.first;
+        // Get clean city and area info
+        String cityName =
+            place.locality ?? place.subAdministrativeArea ?? "Unknown";
 
-      // ✅ Print all available geocoding fields
-      debugPrint("------ 🌍 Full Location Details ------");
-      debugPrint("Name: ${place.name}");
-      debugPrint("Street: ${place.street}");
-      debugPrint("SubLocality: ${place.subLocality}");
-      debugPrint("Locality (City): ${place.locality}");
-      debugPrint("SubAdministrativeArea (District): ${place.subAdministrativeArea}");
-      debugPrint("AdministrativeArea (State): ${place.administrativeArea}");
-      debugPrint("PostalCode: ${place.postalCode}");
-      debugPrint("Country: ${place.country}");
-      debugPrint("ISO Country Code: ${place.isoCountryCode}");
-      debugPrint("Thoroughfare: ${place.thoroughfare}");
-      debugPrint("SubThoroughfare: ${place.subThoroughfare}");
-      debugPrint("--------------------------------------");
+        // Combine plus code / name and administrative area
+        String areaDetails = [
+          if (place.name != null && place.name!.isNotEmpty)
+            place.name, // e.g., MGF3+QG6
+          if (place.subAdministrativeArea != null &&
+              place.subAdministrativeArea!.isNotEmpty)
+            place.subAdministrativeArea, // e.g., Meerut Division
+        ].join(', ');
 
-      String topLine = place.subLocality ?? place.name ?? "Unknown";
-      String bottomLine = [
-        if (place.street != null && place.street!.isNotEmpty) place.street,
-        if (place.locality != null && place.locality!.isNotEmpty) place.locality,
-        if (place.subAdministrativeArea != null &&
-            place.subAdministrativeArea!.isNotEmpty)
-          place.subAdministrativeArea,
-      ].join(', ');
-
+        setState(() {
+          _city = cityName; // Ghaziabad
+          _country = areaDetails; // MGF3+QG6, Meerut Division
+        });
+      }
+    } catch (e) {
       setState(() {
-        _city = topLine;
-        _country = bottomLine;
+        _city = "Error";
+        _country = "";
       });
     }
-  } catch (e) {
-    debugPrint("❌ Error getting location: $e");
-    setState(() {
-      _city = "Error";
-      _country = "";
-    });
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -161,11 +139,7 @@ Future<void> _getUserLocation() async {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-        
-
       body: Stack(
-       
-        
         children: [
           Container(color: const Color(0xFF000000)),
 
@@ -196,42 +170,54 @@ Future<void> _getUserLocation() async {
               children: [
                 // Top location bar
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          const Icon(Icons.location_on, color: Colors.white, size: 20),
-                          const SizedBox(width: 4),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    _city,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
+                      Expanded(
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.location_on,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 4),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      _city,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                  ),
-                                  const Icon(Icons.keyboard_arrow_down,
-                                      color: Colors.white, size: 20),
-                                ],
-                              ),
-                              Text(
-                                _country,
-                                style: const TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 12,
+                                    const Icon(
+                                      Icons.keyboard_arrow_down,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
+                                Text(
+                                  _country,
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
 
                       // Profile icon
@@ -247,7 +233,11 @@ Future<void> _getUserLocation() async {
                         child: CircleAvatar(
                           radius: 18,
                           backgroundColor: Colors.grey.shade800,
-                          child: const Icon(Icons.person, color: Colors.white, size: 20),
+                          child: const Icon(
+                            Icons.person,
+                            color: Colors.white,
+                            size: 20,
+                          ),
                         ),
                       ),
                     ],
@@ -256,7 +246,10 @@ Future<void> _getUserLocation() async {
 
                 // Search bar
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   child: Container(
                     decoration: BoxDecoration(
                       color: const Color(0xFF2A2A2A),
@@ -266,18 +259,29 @@ Future<void> _getUserLocation() async {
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         hintText: _searchHints[_selectedTabIndex],
-                        hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14),
-                        prefixIcon: Icon(Icons.search, color: Colors.grey.shade500),
+                        hintStyle: TextStyle(
+                          color: Colors.grey.shade500,
+                          fontSize: 14,
+                        ),
+                        prefixIcon: Icon(
+                          Icons.search,
+                          color: Colors.grey.shade500,
+                        ),
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 12,
+                        ),
                       ),
                     ),
                   ),
                 ),
 
-                // Tabs row (updated)
+                // Tabs row
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: List.generate(_tabs.length, (index) {
@@ -293,20 +297,27 @@ Future<void> _getUserLocation() async {
 
                       return Expanded(
                         child: GestureDetector(
-                          onTap: () => setState(() => _selectedTabIndex = index),
+                          onTap: () =>
+                              setState(() => _selectedTabIndex = index),
                           child: FittedBox(
                             fit: BoxFit.scaleDown,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(icons[index],
-                                    size: screenWidth * 0.08,
-                                    color: isSelected ? _tabColors[index] : Colors.grey),
+                                Icon(
+                                  icons[index],
+                                  size: screenWidth * 0.08,
+                                  color: isSelected
+                                      ? _tabColors[index]
+                                      : Colors.grey,
+                                ),
                                 SizedBox(height: screenHeight * 0.01),
                                 Text(
                                   _tabs[index],
                                   style: TextStyle(
-                                    color: isSelected ? _tabColors[index] : Colors.grey.shade400,
+                                    color: isSelected
+                                        ? _tabColors[index]
+                                        : Colors.grey.shade400,
                                     fontSize: screenWidth * 0.03,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -316,7 +327,9 @@ Future<void> _getUserLocation() async {
                                 Container(
                                   height: 2,
                                   width: screenWidth * 0.08,
-                                  color: isSelected ? _tabColors[index] : Colors.transparent,
+                                  color: isSelected
+                                      ? _tabColors[index]
+                                      : Colors.transparent,
                                 ),
                               ],
                             ),
@@ -326,11 +339,11 @@ Future<void> _getUserLocation() async {
                     }),
                   ),
                 ),
-               Expanded(
-                child: IndexedStack(
-                   index: _selectedTabIndex,
-                   children:_pages,
-                   ),
+                Expanded(
+                  child: IndexedStack(
+                    index: _selectedTabIndex,
+                    children: _pages,
+                  ),
                 ),
               ],
             ),
