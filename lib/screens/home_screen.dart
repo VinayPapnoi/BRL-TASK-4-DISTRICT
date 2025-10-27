@@ -6,11 +6,12 @@ import 'package:geocoding/geocoding.dart';
 import 'profile_screen.dart';
 import '../providers/auth_provider.dart';
 import '../utils/colors.dart';
-
+import 'sub_screens/activities_page.dart';
 import 'sub_screens/dining_page.dart';
 import 'sub_screens/events_page.dart';
 import 'sub_screens/for_you_page.dart';
 import 'sub_screens/movie_page.dart';
+import 'sub_screens/stores_page.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -30,7 +31,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     'DINING',
     'EVENTS',
     'MOVIES',
-    
+    'STORES',
+    'ACTIVITIES',
     
   ];
 
@@ -39,7 +41,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     AppColors.diningRed,
     AppColors.eventsYellow,
     AppColors.moviesBlue,
-    
+    AppColors.storesGreen,
+    AppColors.activitiesOrange,
     
   ];
   
@@ -49,7 +52,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   DiningPage(),
   EventsPage(),
   MoviesPage(),
-  
+  StoresPage(), 
+  ActivitiesPage()
   
 ];
 
@@ -59,7 +63,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     'Search for restaurants, cuisines, dishes...',
     'Search for concerts, shows, exhibitions...',
     'Search for movies, showtimes, theaters...',
-    
+    'Search for products, brands, stores...', 
+    'Search for activities, experiences, fun...',
     
   ];
 
@@ -69,65 +74,86 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     _getUserLocation();
   }
 
-  Future<void> _getUserLocation() async {
-    try {
-      loc.Location location = loc.Location();
-      bool serviceEnabled = await location.serviceEnabled();
+Future<void> _getUserLocation() async {
+  try {
+    loc.Location location = loc.Location();
+
+    bool serviceEnabled = await location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
       if (!serviceEnabled) {
-        serviceEnabled = await location.requestService();
-        if (!serviceEnabled) {
-          setState(() {
-            _city = "Location Off";
-            _country = "";
-          });
-          return;
-        }
-      }
-
-      loc.PermissionStatus permissionGranted = await location.hasPermission();
-      if (permissionGranted == loc.PermissionStatus.denied) {
-        permissionGranted = await location.requestPermission();
-        if (permissionGranted != loc.PermissionStatus.granted) {
-          setState(() {
-            _city = "Unknown";
-            _country = "";
-          });
-          return;
-        }
-      }
-
-      loc.LocationData myLocation = await location.getLocation();
-
-      List<Placemark> placemarks = await placemarkFromCoordinates(
-        myLocation.latitude!,
-        myLocation.longitude!,
-      );
-
-      if (placemarks.isNotEmpty) {
-        Placemark place = placemarks.first;
-        String topLine = place.subLocality ?? place.name ?? "Unknown";
-        String bottomLine = [
-          if (place.street != null && place.street!.isNotEmpty) place.street,
-          if (place.locality != null && place.locality!.isNotEmpty)
-            place.locality,
-          if (place.subAdministrativeArea != null &&
-              place.subAdministrativeArea!.isNotEmpty)
-            place.subAdministrativeArea,
-        ].join(', ');
-
         setState(() {
-          _city = topLine;
-          _country = bottomLine;
+          _city = "Location Off";
+          _country = "";
         });
+        return;
       }
-    } catch (e) {
-      debugPrint("Error getting location: $e");
+    }
+
+    loc.PermissionStatus permissionGranted = await location.hasPermission();
+    if (permissionGranted == loc.PermissionStatus.denied) {
+      permissionGranted = await location.requestPermission();
+      if (permissionGranted != loc.PermissionStatus.granted) {
+        setState(() {
+          _city = "Unknown";
+          _country = "";
+        });
+        return;
+      }
+    }
+
+    // ✅ Get current location
+    loc.LocationData myLocation = await location.getLocation();
+    double lat = myLocation.latitude!;
+    double lon = myLocation.longitude!;
+
+    debugPrint("📍 Latitude: $lat");
+    debugPrint("📍 Longitude: $lon");
+
+    // ✅ Get full placemark info
+    List<Placemark> placemarks = await placemarkFromCoordinates(lat, lon);
+
+    if (placemarks.isNotEmpty) {
+      Placemark place = placemarks.first;
+
+      // ✅ Print all available geocoding fields
+      debugPrint("------ 🌍 Full Location Details ------");
+      debugPrint("Name: ${place.name}");
+      debugPrint("Street: ${place.street}");
+      debugPrint("SubLocality: ${place.subLocality}");
+      debugPrint("Locality (City): ${place.locality}");
+      debugPrint("SubAdministrativeArea (District): ${place.subAdministrativeArea}");
+      debugPrint("AdministrativeArea (State): ${place.administrativeArea}");
+      debugPrint("PostalCode: ${place.postalCode}");
+      debugPrint("Country: ${place.country}");
+      debugPrint("ISO Country Code: ${place.isoCountryCode}");
+      debugPrint("Thoroughfare: ${place.thoroughfare}");
+      debugPrint("SubThoroughfare: ${place.subThoroughfare}");
+      debugPrint("--------------------------------------");
+
+      String topLine = place.subLocality ?? place.name ?? "Unknown";
+      String bottomLine = [
+        if (place.street != null && place.street!.isNotEmpty) place.street,
+        if (place.locality != null && place.locality!.isNotEmpty) place.locality,
+        if (place.subAdministrativeArea != null &&
+            place.subAdministrativeArea!.isNotEmpty)
+          place.subAdministrativeArea,
+      ].join(', ');
+
       setState(() {
-        _city = "Error";
-        _country = "";
+        _city = topLine;
+        _country = bottomLine;
       });
     }
+  } catch (e) {
+    debugPrint("❌ Error getting location: $e");
+    setState(() {
+      _city = "Error";
+      _country = "";
+    });
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
