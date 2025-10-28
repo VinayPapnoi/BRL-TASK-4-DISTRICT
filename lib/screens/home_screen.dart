@@ -10,7 +10,7 @@ import 'sub_screens/activities_page.dart';
 import 'sub_screens/dining_page.dart';
 import 'sub_screens/events_page.dart';
 import 'sub_screens/for_you_page.dart';
-import 'sub_screens/movie_page.dart';
+import 'movies/movie_page.dart';
 import 'sub_screens/stores_page.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
