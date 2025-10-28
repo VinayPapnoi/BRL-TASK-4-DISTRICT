@@ -11,8 +11,8 @@ final List<Map<String, dynamic>> sampleMovies = [
     'synopsis':
         'Exploring the origins of Kand-bhatta Shiva during the Kadamba dynasty era, delving into the untamed wilderness and forgotten lore surrounding his past.',
     'cast': [
-      {'name': 'Actor 1', 'image': 'https://via.placeholder.com/100x100?text=Actor1'},
-      {'name': 'Actor 2', 'image': 'https://via.placeholder.com/100x100?text=Actor2'},
+      {'name': 'Male', 'image': 'assets/movieimg/male.jpg'},
+      {'name': 'Female', 'image': 'assets/movieimg/female.jpg'},
     ],
     'availableDates': [
       {'date': '28', 'day': 'Mon'},
@@ -34,8 +34,8 @@ final List<Map<String, dynamic>> sampleMovies = [
     'synopsis':
         'Deadpool teams up with Wolverine for a chaotic multiverse adventure filled with humor and fourth-wall-breaking madness.',
     'cast': [
-      {'name': 'Actor 1', 'image': 'https://via.placeholder.com/100x100?text=Actor1'},
-      {'name': 'Actor 2', 'image': 'https://via.placeholder.com/100x100?text=Actor2'},
+      {'name': 'Male', 'image': 'assets/movieimg/male.jpg'},
+      {'name': 'Female', 'image': 'assets/movieimg/female.jpg'},
     ],
     'availableDates': [
       {'date': '28', 'day': 'Mon'},
@@ -57,8 +57,8 @@ final List<Map<String, dynamic>> sampleMovies = [
     'synopsis':
         'Riley experiences new emotions as she navigates the challenges of teenage life, with Joy and the gang back in action.',
     'cast': [
-      {'name': 'Actor 1', 'image': 'https://via.placeholder.com/100x100?text=Actor1'},
-      {'name': 'Actor 2', 'image': 'https://via.placeholder.com/100x100?text=Actor2'},
+      {'name': 'Male', 'image': 'assets/movieimg/male.jpg'},
+      {'name': 'Female', 'image': 'assets/movieimg/female.jpg'},
     ],
     'availableDates': [
       {'date': '28', 'day': 'Mon'},
@@ -80,8 +80,8 @@ final List<Map<String, dynamic>> sampleMovies = [
     'synopsis':
         'The story of J. Robert Oppenheimer, the man behind the atomic bomb, and the consequences of his genius.',
     'cast': [
-      {'name': 'Actor 1', 'image': 'https://via.placeholder.com/100x100?text=Actor1'},
-      {'name': 'Actor 2', 'image': 'https://via.placeholder.com/100x100?text=Actor2'},
+      {'name': 'Male', 'image': 'assets/movieimg/male.jpg'},
+      {'name': 'Female', 'image': 'assets/movieimg/female.jpg'},
     ],
     'availableDates': [
       {'date': '28', 'day': 'Mon'},
@@ -103,8 +103,8 @@ final List<Map<String, dynamic>> sampleMovies = [
     'synopsis':
         'Pushpa returns stronger than ever, battling both his enemies and the system in a fight for dominance and survival.',
     'cast': [
-      {'name': 'Actor 1', 'image': 'https://via.placeholder.com/100x100?text=Actor1'},
-      {'name': 'Actor 2', 'image': 'https://via.placeholder.com/100x100?text=Actor2'},
+      {'name': 'Male', 'image': 'assets/movieimg/male.jpg'},
+      {'name': 'Female', 'image': 'assets/movieimg/female.jpg'},
     ],
     'availableDates': [
       {'date': '28', 'day': 'Mon'},
@@ -126,8 +126,8 @@ final List<Map<String, dynamic>> sampleMovies = [
     'synopsis':
         'In a dystopian future, the world awaits the arrival of Kalki — the final avatar who will restore balance to humanity.',
     'cast': [
-      {'name': 'Actor 1', 'image': 'https://via.placeholder.com/100x100?text=Actor1'},
-      {'name': 'Actor 2', 'image': 'https://via.placeholder.com/100x100?text=Actor2'},
+      {'name': 'Male', 'image': 'assets/movieimg/male.jpg'},
+      {'name': 'Female', 'image': 'assets/movieimg/female.jpg'},
     ],
     'availableDates': [
       {'date': '1', 'day': 'Fri'},
@@ -149,8 +149,8 @@ final List<Map<String, dynamic>> sampleMovies = [
     'synopsis':
         'Arthur Fleck returns, joined by Harley Quinn, as they navigate madness, fame, and chaos in Gotham City.',
     'cast': [
-      {'name': 'Actor 1', 'image': 'https://via.placeholder.com/100x100?text=Actor1'},
-      {'name': 'Actor 2', 'image': 'https://via.placeholder.com/100x100?text=Actor2'},
+      {'name': 'Male', 'image': 'assets/movieimg/male.jpg'},
+      {'name': 'Female', 'image': 'assets/movieimg/female.jpg'},
     ],
     'availableDates': [
       {'date': '10', 'day': 'Fri'},
@@ -172,8 +172,8 @@ final List<Map<String, dynamic>> sampleMovies = [
     'synopsis':
         'Paul Atreides unites with the Fremen and plots revenge against the conspirators who destroyed his family.',
     'cast': [
-      {'name': 'Actor 1', 'image': 'https://via.placeholder.com/100x100?text=Actor1'},
-      {'name': 'Actor 2', 'image': 'https://via.placeholder.com/100x100?text=Actor2'},
+      {'name': 'Male', 'image': 'assets/movieimg/male.jpg'},
+      {'name': 'Female', 'image': 'assets/movieimg/female.jpg'},
     ],
     'availableDates': [
       {'date': '5', 'day': 'Wed'},
@@ -195,8 +195,8 @@ final List<Map<String, dynamic>> sampleMovies = [
     'synopsis':
         'A peaceful man is drawn back into his violent past, blurring the lines between savior and killer.',
     'cast': [
-      {'name': 'Actor 1', 'image': 'https://via.placeholder.com/100x100?text=Actor1'},
-      {'name': 'Actor 2', 'image': 'https://via.placeholder.com/100x100?text=Actor2'},
+      {'name': 'Male', 'image': 'assets/movieimg/male.jpg'},
+      {'name': 'Female', 'image': 'assets/movieimg/female.jpg'},
     ],
     'availableDates': [
       {'date': '12', 'day': 'Thu'},
@@ -218,8 +218,8 @@ final List<Map<String, dynamic>> sampleMovies = [
     'synopsis':
         'Miles Morales teams up with new Spider-People across dimensions in the next chapter of the Spider-Verse saga.',
     'cast': [
-      {'name': 'Actor 1', 'image': 'https://via.placeholder.com/100x100?text=Actor1'},
-      {'name': 'Actor 2', 'image': 'https://via.placeholder.com/100x100?text=Actor2'},
+      {'name': 'Male', 'image': 'assets/movieimg/male.jpg'},
+      {'name': 'Female', 'image': 'assets/movieimg/female.jpg'},
     ],
     'availableDates': [
       {'date': '15', 'day': 'Fri'},
@@ -241,8 +241,8 @@ final List<Map<String, dynamic>> sampleMovies = [
     'synopsis':
         'Bruce Wayne returns to face a new wave of chaos in Gotham as old enemies and new threats collide.',
     'cast': [
-      {'name': 'Actor 1', 'image': 'https://via.placeholder.com/100x100?text=Actor1'},
-      {'name': 'Actor 2', 'image': 'https://via.placeholder.com/100x100?text=Actor2'},
+      {'name': 'Male', 'image': 'assets/movieimg/male.jpg'},
+      {'name': 'Female', 'image': 'assets/movieimg/female.jpg'},
     ],
     'availableDates': [
       {'date': '19', 'day': 'Tue'},
@@ -264,8 +264,8 @@ final List<Map<String, dynamic>> sampleMovies = [
     'synopsis':
         'Jake Sully and Neytiri embark on a new journey to protect their home from human invaders once again.',
     'cast': [
-      {'name': 'Actor 1', 'image': 'https://via.placeholder.com/100x100?text=Actor1'},
-      {'name': 'Actor 2', 'image': 'https://via.placeholder.com/100x100?text=Actor2'},
+      {'name': 'Male', 'image': 'assets/movieimg/male.jpg'},
+      {'name': 'Female', 'image': 'assets/movieimg/female.jpg'},
     ],
     'availableDates': [
       {'date': '8', 'day': 'Mon'},
@@ -287,8 +287,8 @@ final List<Map<String, dynamic>> sampleMovies = [
     'synopsis':
         'Ethan Hunt races against time to stop a rogue AI from controlling the world’s most dangerous secrets.',
     'cast': [
-      {'name': 'Actor 1', 'image': 'https://via.placeholder.com/100x100?text=Actor1'},
-      {'name': 'Actor 2', 'image': 'https://via.placeholder.com/100x100?text=Actor2'},
+      {'name': 'Male', 'image': 'assets/movieimg/male.jpg'},
+      {'name': 'Female', 'image': 'assets/movieimg/female.jpg'},
     ],
     'availableDates': [
       {'date': '3', 'day': 'Fri'},
@@ -310,8 +310,8 @@ final List<Map<String, dynamic>> sampleMovies = [
     'synopsis':
         'Barry Allen must race against time itself to restore balance after a catastrophic timeline fracture.',
     'cast': [
-      {'name': 'Actor 1', 'image': 'https://via.placeholder.com/100x100?text=Actor1'},
-      {'name': 'Actor 2', 'image': 'https://via.placeholder.com/100x100?text=Actor2'},
+      {'name': 'Male', 'image': 'assets/movieimg/male.jpg'},
+      {'name': 'Female', 'image': 'assets/movieimg/female.jpg'},
     ],
     'availableDates': [
       {'date': '22', 'day': 'Sat'},
@@ -333,8 +333,8 @@ final List<Map<String, dynamic>> sampleMovies = [
     'synopsis':
         'John Wick returns from the shadows for one final showdown against the global assassin order.',
     'cast': [
-      {'name': 'Actor 1', 'image': 'https://via.placeholder.com/100x100?text=Actor1'},
-      {'name': 'Actor 2', 'image': 'https://via.placeholder.com/100x100?text=Actor2'},
+      {'name': 'Male', 'image': 'assets/movieimg/male.jpg'},
+      {'name': 'Female', 'image': 'assets/movieimg/female.jpg'},
     ],
     'availableDates': [
       {'date': '14', 'day': 'Thu'},
@@ -347,7 +347,7 @@ final List<Map<String, dynamic>> sampleMovies = [
   {
     'id': 'movie_016',
     'title': 'Doctor Strange: The Multiverse Wars',
-    'bannerImage': 'hassets/movieimg/movies/doctor.jpeg',
+    'bannerImage': 'assets/movieimg/movies/doctor.jpg',
     'certificate': 'UA/13+',
     'language': 'English',
     'duration': '2 hr 35 min',
@@ -356,8 +356,8 @@ final List<Map<String, dynamic>> sampleMovies = [
     'synopsis':
         'Doctor Strange faces his greatest challenge yet as universes collide in an all-out magical war.',
     'cast': [
-      {'name': 'Actor 1', 'image': 'https://via.placeholder.com/100x100?text=Actor1'},
-      {'name': 'Actor 2', 'image': 'https://via.placeholder.com/100x100?text=Actor2'},
+      {'name': 'Male', 'image': 'assets/movieimg/male.jpg'},
+      {'name': 'Female', 'image': 'assets/movieimg/female.jpg'},
     ],
     'availableDates': [
       {'date': '9', 'day': 'Fri'},
@@ -379,8 +379,8 @@ final List<Map<String, dynamic>> sampleMovies = [
     'synopsis':
         'The multiverse is collapsing, and the Avengers must unite across realities for the final stand.',
     'cast': [
-      {'name': 'Actor 1', 'image': 'https://via.placeholder.com/100x100?text=Actor1'},
-      {'name': 'Actor 2', 'image': 'https://via.placeholder.com/100x100?text=Actor2'},
+      {'name': 'Male', 'image': 'assets/movieimg/male.jpg'},
+      {'name': 'Female', 'image': 'assets/movieimg/female.jpg'},
     ],
     'availableDates': [
       {'date': '28', 'day': 'Wed'},
@@ -402,8 +402,8 @@ final List<Map<String, dynamic>> sampleMovies = [
     'synopsis':
         'Rocky Bhai returns to rule the underworld, but new enemies rise to challenge his empire.',
     'cast': [
-      {'name': 'Actor 1', 'image': 'https://via.placeholder.com/100x100?text=Actor1'},
-      {'name': 'Actor 2', 'image': 'https://via.placeholder.com/100x100?text=Actor2'},
+      {'name': 'Male', 'image': 'assets/movieimg/male.jpg'},
+      {'name': 'Female', 'image': 'assets/movieimg/female.jpg'},
     ],
     'availableDates': [
       {'date': '7', 'day': 'Tue'},
@@ -425,8 +425,8 @@ final List<Map<String, dynamic>> sampleMovies = [
     'synopsis':
         'Deva returns to fulfill his destiny as a war between kingdoms erupts in the world of Khansaar.',
     'cast': [
-      {'name': 'Actor 1', 'image': 'https://via.placeholder.com/100x100?text=Actor1'},
-      {'name': 'Actor 2', 'image': 'https://via.placeholder.com/100x100?text=Actor2'},
+      {'name': 'Male', 'image': 'assets/movieimg/male.jpg'},
+      {'name': 'Female', 'image': 'assets/movieimg/female.jpg'},
     ],
     'availableDates': [
       {'date': '18', 'day': 'Thu'},
@@ -448,8 +448,8 @@ final List<Map<String, dynamic>> sampleMovies = [
     'synopsis':
         'A new generation rises in the Pride Lands as Simba’s legacy continues in this reimagined saga.',
     'cast': [
-      {'name': 'Actor 1', 'image': 'https://via.placeholder.com/100x100?text=Actor1'},
-      {'name': 'Actor 2', 'image': 'https://via.placeholder.com/100x100?text=Actor2'},
+      {'name': 'Male', 'image': 'assets/movieimg/male.jpg'},
+      {'name': 'Female', 'image': 'assets/movieimg/female.jpg'},
     ],
     'availableDates': [
       {'date': '1', 'day': 'Wed'},

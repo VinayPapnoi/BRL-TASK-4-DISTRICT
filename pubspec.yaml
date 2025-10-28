@@ -30,4 +30,5 @@ flutter:
   assets:
     - assets/images/
     - assets/movieimg/movies/
+    - assets/movieimg/
   uses-material-design: true

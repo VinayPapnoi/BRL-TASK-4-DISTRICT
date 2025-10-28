@@ -3,10 +3,8 @@ import 'package:flutter/material.dart';
 class MovieDetailScreen extends StatefulWidget {
   final Map<String, dynamic> movieData;
 
-  const MovieDetailScreen({
-    Key? key,
-    required this.movieData,
-  }) : super(key: key);
+  const MovieDetailScreen({Key? key, required this.movieData})
+    : super(key: key);
 
   @override
   State<MovieDetailScreen> createState() => _MovieDetailScreenState();
@@ -29,7 +27,15 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
       final date = now.add(Duration(days: index));
       return {
         'date': date.day.toString(),
-        'day': ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.weekday % 7],
+        'day': [
+          'Sun',
+          'Mon',
+          'Tue',
+          'Wed',
+          'Thu',
+          'Fri',
+          'Sat',
+        ][date.weekday % 7],
       };
     });
   }
@@ -51,18 +57,20 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
               onPressed: () => Navigator.pop(context),
             ),
             actions: [
-              IconButton(icon: const Icon(Icons.bookmark_border, color: Colors.white), onPressed: () {}),
-              IconButton(icon: const Icon(Icons.share, color: Colors.white), onPressed: () {}),
+              IconButton(
+                icon: const Icon(Icons.bookmark_border, color: Colors.white),
+                onPressed: () {},
+              ),
+              IconButton(
+                icon: const Icon(Icons.share, color: Colors.white),
+                onPressed: () {},
+              ),
             ],
             flexibleSpace: FlexibleSpaceBar(
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  /// ✅ FIXED → Local asset image instead of network
-                  Image.asset(
-                    data['bannerImage'] ?? '',
-                    fit: BoxFit.cover,
-                  ),
+                  Image.asset(data['bannerImage'] ?? '', fit: BoxFit.cover),
                   Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -92,7 +100,11 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
 
                   Text(
                     data['title'] ?? 'Untitled Movie',
-                    style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
 
                   const SizedBox(height: 8),
@@ -106,7 +118,11 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
 
                   Text(
                     data['synopsis'] ?? 'No synopsis available.',
-                    style: TextStyle(color: Colors.grey[300], fontSize: 14, height: 1.4),
+                    style: TextStyle(
+                      color: Colors.grey[300],
+                      fontSize: 14,
+                      height: 1.4,
+                    ),
                   ),
 
                   const SizedBox(height: 20),
@@ -137,7 +153,11 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
           ),
           child: Text(
             genre,
-            style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         );
       }).toList(),
@@ -146,7 +166,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
 
   Widget _buildCastSection(List cast) {
     return SizedBox(
-      height: 100,
+      height: 110,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: cast.length,
@@ -159,12 +179,18 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                 CircleAvatar(
                   radius: 32,
                   backgroundColor: Colors.grey[800],
-                  backgroundImage: NetworkImage(member['image']),
+                  backgroundImage: AssetImage(member['image']), // ✅ FIXED
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  member['name'],
-                  style: const TextStyle(color: Colors.white, fontSize: 12),
+                SizedBox(
+                  width: 70,
+                  child: Text(
+                    member['name'],
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.white, fontSize: 12),
+                  ),
                 ),
               ],
             ),
@@ -178,15 +204,52 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            backgroundColor: Colors.black87,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            builder: (context) => Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Text(
+                    "Work in progress (sorry sir)",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    "Seat selection feature is under construction.",
+                    style: TextStyle(color: Colors.white60, fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 20),
+                ],
+              ),
+            ),
+          );
+        },
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.red[600],
           padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
         child: const Text(
           'Select Seats',
-          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );

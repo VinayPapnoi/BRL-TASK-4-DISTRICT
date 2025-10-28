@@ -15,8 +15,7 @@ class MovieBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String title = movieData['title'] ?? 'Untitled';
-    final String banner = movieData['bannerImage'] ??
-        'https://via.placeholder.com/800x400?text=no_banner';
+    final String banner = movieData['bannerImage'] ?? '';
 
     return GestureDetector(
       onTap: () {
@@ -38,30 +37,32 @@ class MovieBox extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12),
           child: Column(
-            mainAxisSize: MainAxisSize.min, // ✅ fixes overflow
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Movie Image
               AspectRatio(
-                aspectRatio: 3 / 4, // ✅ keeps poster ratio consistent
-                child: Image.network(
-                  banner,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    color: Colors.grey[800],
-                    child: const Icon(Icons.broken_image, color: Colors.white54),
-                  ),
-                ),
+                aspectRatio: 3 / 4,
+                child: banner.startsWith('assets/')
+                    ? Image.asset(
+                        banner,
+                        fit: BoxFit.cover,
+                      )
+                    : Image.network(
+                        banner,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          color: Colors.grey[800],
+                          child: const Icon(Icons.broken_image,
+                              color: Colors.white54),
+                        ),
+                      ),
               ),
 
-              // Movie title and bookmark
               Container(
                 color: Colors.black87,
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                 child: Row(
                   children: [
-                    // ✅ Expanded prevents text overflow
                     Expanded(
                       child: Text(
                         title,
