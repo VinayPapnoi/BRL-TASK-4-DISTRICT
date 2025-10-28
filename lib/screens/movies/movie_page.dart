@@ -7,23 +7,23 @@ class MoviesPage extends StatelessWidget {
   final List<Map<String, String>> movies = const [
     {
       'title': 'Dune: Part Two',
-      'image': 'https://via.placeholder.com/200x300?text=Dune+2'
+      'image': 'https://via.placeholder.com/200x300?text=Dune+2',
     },
     {
       'title': 'Joker: Folie à Deux',
-      'image': 'https://via.placeholder.com/200x300?text=Joker+2'
+      'image': 'https://via.placeholder.com/200x300?text=Joker+2',
     },
     {
       'title': 'Deadpool & Wolverine',
-      'image': 'https://via.placeholder.com/200x300?text=Deadpool+3'
+      'image': 'https://via.placeholder.com/200x300?text=Deadpool+3',
     },
     {
       'title': 'Inside Out 2',
-      'image': 'https://via.placeholder.com/200x300?text=Inside+Out+2'
+      'image': 'https://via.placeholder.com/200x300?text=Inside+Out+2',
     },
     {
       'title': 'Oppenheimer',
-      'image': 'https://via.placeholder.com/200x300?text=Oppenheimer'
+      'image': 'https://via.placeholder.com/200x300?text=Oppenheimer',
     },
   ];
 
@@ -40,15 +40,17 @@ class MoviesPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 16.0,
+                ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: AspectRatio(
-                    aspectRatio: 16 / 6, // Adjust this for your image proportions
+                    aspectRatio: 16 / 6,
                     child: Image.asset(
                       'assets/images/spotlight_banner.png',
-                      fit: BoxFit.fitWidth, // Show full width, no cropping
+                      fit: BoxFit.fitWidth,
                       width: double.infinity,
                     ),
                   ),
@@ -58,69 +60,119 @@ class MoviesPage extends StatelessWidget {
               //  Spotlight Carousel hai ye
               SizedBox(
                 height: 280,
-                child: PageView.builder(
-                  controller: PageController(viewportFraction: 0.7),
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: movies.length,
-                  itemBuilder: (context, index) {
-                    final movie = movies[index];
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MovieDetailScreen(
-                              title: movie['title']!,
-                              image: movie['image']!,
-                            ),
-                          ),
-                        );
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              Image.network(
-                                movie['image']!,
-                                fit: BoxFit.cover,
-                              ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Colors.black.withOpacity(0.6),
-                                      Colors.transparent,
-                                      Colors.black.withOpacity(0.7),
-                                    ],
-                                    begin: Alignment.bottomCenter,
-                                    end: Alignment.topCenter,
+                child: // 🔸 Spotlight Carousel (Infinite Loop with 6 placeholders)
+                SizedBox(
+                  height: 280,
+                  child: StatefulBuilder(
+                    builder: (context, setState) {
+                      final PageController controller = PageController(
+                        viewportFraction: 0.7,
+                        initialPage: 1000,
+                      );
+
+                      final List<Map<String, String>> movies = [
+                        {
+                          'title': 'Dune: Part Two',
+                          'image':
+                              'https://via.placeholder.com/200x300?text=Dune+2',
+                        },
+                        {
+                          'title': 'Joker: Folie à Deux',
+                          'image':
+                              'https://via.placeholder.com/200x300?text=Joker+2',
+                        },
+                        {
+                          'title': 'Deadpool & Wolverine',
+                          'image':
+                              'https://via.placeholder.com/200x300?text=Deadpool+3',
+                        },
+                        {
+                          'title': 'Inside Out 2',
+                          'image':
+                              'https://via.placeholder.com/200x300?text=Inside+Out+2',
+                        },
+                        {
+                          'title': 'Oppenheimer',
+                          'image':
+                              'https://via.placeholder.com/200x300?text=Oppenheimer',
+                        },
+                        {
+                          'title': 'Venom 3',
+                          'image':
+                              'https://via.placeholder.com/200x300?text=Venom+3',
+                        },
+                      ];
+
+                      final total = movies.length;
+
+                      return PageView.builder(
+                        controller: controller,
+                        physics: const BouncingScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          final movie =
+                              movies[index % total]; // 🔁 infinite loop
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => MovieDetailScreen(
+                                    title: movie['title']!,
+                                    image: movie['image']!,
                                   ),
                                 ),
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8.0,
                               ),
-                              Align(
-                                alignment: Alignment.bottomCenter,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Text(
-                                    movie['title']!,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: Stack(
+                                  fit: StackFit.expand,
+                                  children: [
+                                    Image.network(
+                                      movie['image']!,
+                                      fit: BoxFit.cover,
                                     ),
-                                    textAlign: TextAlign.center,
-                                  ),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            Colors.black.withOpacity(0.6),
+                                            Colors.transparent,
+                                            Colors.black.withOpacity(0.7),
+                                          ],
+                                          begin: Alignment.bottomCenter,
+                                          end: Alignment.topCenter,
+                                        ),
+                                      ),
+                                    ),
+                                    Align(
+                                      alignment: Alignment.bottomCenter,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: Text(
+                                          movie['title']!,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ),
               ),
 
@@ -145,7 +197,6 @@ class MoviesPage extends StatelessWidget {
 
               const SizedBox(height: 10),
 
-            
               SizedBox(
                 height: 230,
                 child: ListView.builder(
@@ -166,7 +217,8 @@ class MoviesPage extends StatelessWidget {
                         children: [
                           ClipRRect(
                             borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(12)),
+                              top: Radius.circular(12),
+                            ),
                             child: Image.network(
                               "https://via.placeholder.com/140x180?text=Movie+$index",
                               height: 180,
