@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "409754702679",
+    "project_id": "district-app-7964d",
+    "storage_bucket": "district-app-7964d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:409754702679:android:3e8f828197e2bc8aaca412",
+        "android_client_info": {
+          "package_name": "com.example.brl_task_4"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGdUpHArikBORLSy38W1RjPnoyMmiH19g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
