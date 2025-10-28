@@ -1,32 +1,10 @@
 import 'package:flutter/material.dart';
+import 'movie_data.dart';
 import '../../widgets/movie_box.dart';
 import 'movie_detail_screen.dart';
 
 class MoviesPage extends StatelessWidget {
   const MoviesPage({Key? key}) : super(key: key);
-
-  final List<Map<String, String>> movies = const [
-    {
-      'title': 'Dune: Part Two',
-      'image': 'https://via.placeholder.com/200x300?text=Dune+2',
-    },
-    {
-      'title': 'Joker: Folie à Deux',
-      'image': 'https://via.placeholder.com/200x300?text=Joker+2',
-    },
-    {
-      'title': 'Deadpool & Wolverine',
-      'image': 'https://via.placeholder.com/200x300?text=Deadpool+3',
-    },
-    {
-      'title': 'Inside Out 2',
-      'image': 'https://via.placeholder.com/200x300?text=Inside+Out+2',
-    },
-    {
-      'title': 'Oppenheimer',
-      'image': 'https://via.placeholder.com/200x300?text=Oppenheimer',
-    },
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -50,48 +28,57 @@ class MoviesPage extends StatelessWidget {
               _buildBannerImage('assets/images/explore_icon.png'),
               const SizedBox(height: 20),
 
-              // 🟢 Two side-by-side boxes
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildImageBox(context, 'assets/images/box_left.jpeg'),
-                    _buildImageBox(context, 'assets/images/box_right.jpeg'),
+                  children: const [
+                    _StaticImageBox(imagePath: 'assets/images/box_left.jpeg'),
+                    _StaticImageBox(imagePath: 'assets/images/box_right.jpeg'),
                   ],
                 ),
               ),
 
               const SizedBox(height: 20),
-
-              // 🟢 NEW horizontal banner below boxes
               _buildBannerImage('assets/images/only_theatre.png'),
+              const SizedBox(height: 20),
 
-              const SizedBox(height: 40),
-              // 🟩 Grid of 29 Movie Boxes (2 columns)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2, // ✅ 2 boxes per row
-                    crossAxisSpacing: 12, // horizontal space
-                    mainAxisSpacing: 16, // vertical space
-                    childAspectRatio:
-                        0.68, // adjust height/width ratio for nice proportions
-                  ),
-                  itemCount: 29,
-                  itemBuilder: (context, index) {
-                    return MovieBox(
-                      imagePath:
-                          "https://via.placeholder.com/300x450?text=Movie+$index",
-                      title: "Movie $index",
-                      isNetworkImage: true,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final boxWidth = (constraints.maxWidth - 12) / 2;
+                    final gridCount = sampleMovies.length;
+                    return Wrap(
+                      spacing: 12,
+                      runSpacing: 12,
+                      children: List.generate(gridCount, (index) {
+                        final movie = sampleMovies[index];
+                        return SizedBox(
+                          width: boxWidth,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      MovieDetailScreen(movieData: movie),
+                                ),
+                              );
+                            },
+                            child: MovieBox(
+                              movieData: movie,
+                              width: boxWidth,
+                            ),
+                          ),
+                        );
+                      }),
                     );
                   },
                 ),
               ),
+
+              const SizedBox(height: 40),
             ],
           ),
         ),
@@ -99,52 +86,23 @@ class MoviesPage extends StatelessWidget {
     );
   }
 
-  /// 🔸 Common banner image
   Widget _buildBannerImage(String path) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
-        child: Image.asset(path, fit: BoxFit.contain, width: double.infinity),
+        child: Image.asset(
+          path,
+          fit: BoxFit.contain,
+          width: double.infinity,
+        ),
       ),
     );
   }
 
-  /// 🔸 Spotlight Carousel
   Widget _buildMovieCarousel(BuildContext context) {
-    final PageController controller = PageController(
-      viewportFraction: 0.7,
-      initialPage: 1000,
-    );
-
-    final List<Map<String, String>> movies = [
-      {
-        'title': 'Dune: Part Two',
-        'image': 'https://via.placeholder.com/200x300?text=Dune+2',
-      },
-      {
-        'title': 'Joker',
-        'image': 'https://via.placeholder.com/200x300?text=Joker+2',
-      },
-      {
-        'title': 'Deadpool & Wolverine',
-        'image': 'https://via.placeholder.com/200x300?text=Deadpool+3',
-      },
-      {
-        'title': 'Inside Out 2',
-        'image': 'https://via.placeholder.com/200x300?text=Inside+Out+2',
-      },
-      {
-        'title': 'Oppenheimer',
-        'image': 'https://via.placeholder.com/200x300?text=Oppenheimer',
-      },
-      {
-        'title': 'Venom 3',
-        'image': 'https://via.placeholder.com/200x300?text=Venom+3',
-      },
-    ];
-
-    final total = movies.length;
+    final PageController controller = PageController(viewportFraction: 0.7);
+    final total = sampleMovies.length;
 
     return SizedBox(
       height: 280,
@@ -152,16 +110,13 @@ class MoviesPage extends StatelessWidget {
         controller: controller,
         physics: const BouncingScrollPhysics(),
         itemBuilder: (context, index) {
-          final movie = movies[index % total];
+          final movie = sampleMovies[index % total];
           return GestureDetector(
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => MovieDetailScreen(
-                    title: movie['title']!,
-                    image: movie['image']!,
-                  ),
+                  builder: (context) => MovieDetailScreen(movieData: movie),
                 ),
               );
             },
@@ -172,7 +127,11 @@ class MoviesPage extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    Image.network(movie['image']!, fit: BoxFit.cover),
+                    /// ✅ FIXED: Local asset instead of network
+                    Image.asset(
+                      movie['bannerImage'] ?? '',
+                      fit: BoxFit.cover,
+                    ),
                     Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -191,7 +150,9 @@ class MoviesPage extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: Text(
-                          movie['title']!,
+                          movie['title'] ?? '',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
@@ -211,35 +172,77 @@ class MoviesPage extends StatelessWidget {
     );
   }
 
-  /// 🔸 Horizontal movie list (3 boxes)
   Widget _buildHorizontalMovieList(double screenWidth) {
+    final movies = sampleMovies.take(3).toList();
+
     return SizedBox(
       height: 230,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
-        itemCount: 3,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: movies.length,
+        padding: const EdgeInsets.symmetric(horizontal: 8),
         itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: MovieBox(
-              imagePath:
-                  "https://via.placeholder.com/140x180?text=Movie+$index",
-              title: "Movie Title $index",
-              isNetworkImage: true,
-              width: screenWidth * 0.35,
+          final movie = movies[index];
+          return Container(
+            width: screenWidth * 0.35,
+            margin: const EdgeInsets.symmetric(horizontal: 8),
+            decoration: BoxDecoration(
+              color: Colors.grey[900],
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => MovieDetailScreen(movieData: movie),
+                  ),
+                );
+              },
+              child: Column(
+                children: [
+                  ClipRRect(
+                    borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(12)),
+                    child: Image.asset(
+                      movie['bannerImage'] ?? '',
+                      height: 180,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      movie['title'] ?? '',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         },
       ),
     );
   }
+}
 
-  /// 🔸 Static two image boxes (local)
-  Widget _buildImageBox(BuildContext context, String imagePath) {
+class _StaticImageBox extends StatelessWidget {
+  final String imagePath;
+  const _StaticImageBox({required this.imagePath});
+
+  @override
+  Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-
     return Container(
       width: (screenWidth - 48) / 2,
       decoration: BoxDecoration(

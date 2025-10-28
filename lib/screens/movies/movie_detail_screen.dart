@@ -1,153 +1,194 @@
 import 'package:flutter/material.dart';
 
-class MovieDetailScreen extends StatelessWidget {
-  final String title;
-  final String image;
+class MovieDetailScreen extends StatefulWidget {
+  final Map<String, dynamic> movieData;
 
   const MovieDetailScreen({
     Key? key,
-    required this.title,
-    required this.image,
+    required this.movieData,
   }) : super(key: key);
 
   @override
+  State<MovieDetailScreen> createState() => _MovieDetailScreenState();
+}
+
+class _MovieDetailScreenState extends State<MovieDetailScreen> {
+  bool isBlockbusterOfferEnabled = true;
+  int selectedDateIndex = 0;
+  late List<Map<String, String>> availableDates;
+
+  @override
+  void initState() {
+    super.initState();
+    availableDates = _generateNextDates(4);
+  }
+
+  List<Map<String, String>> _generateNextDates(int count) {
+    final now = DateTime.now();
+    return List.generate(count, (index) {
+      final date = now.add(Duration(days: index));
+      return {
+        'date': date.day.toString(),
+        'day': ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.weekday % 7],
+      };
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final List<String> nextDates = List.generate(
-      4,
-      (i) => "${DateTime.now().add(Duration(days: i)).day} "
-          "${_getMonthName(DateTime.now().add(Duration(days: i)).month)}",
-    );
+    final data = widget.movieData;
 
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        iconTheme: const IconThemeData(color: Colors.white),
-        title: Text(
-          title,
-          style: const TextStyle(color: Colors.white),
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 🎬 Poster Image
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                image,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: 250,
-              ),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 250,
+            pinned: true,
+            backgroundColor: Colors.black,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
             ),
-            const SizedBox(height: 16),
-
-            // 🎞️ Movie Title
-            Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            const SizedBox(height: 12),
-
-            // 📝 Placeholder Synopsis
-            const Text(
-              "Synopsis:\n\n"
-              "This is a placeholder description for the selected movie. "
-              "When you connect your API, you can display the movie’s official synopsis, "
-              "cast, director, and ratings here.",
-              style: TextStyle(color: Colors.white70, fontSize: 14, height: 1.4),
-            ),
-
-            const SizedBox(height: 24),
-
-            // 🎟️ Dates to Buy Tickets
-            const Text(
-              "Available Dates:",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 10),
-
-            Wrap(
-              spacing: 10,
-              children: nextDates
-                  .map(
-                    (date) => Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[900],
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey[700]!),
-                      ),
-                      child: Text(
-                        date,
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  )
-                  .toList(),
-            ),
-
-            const SizedBox(height: 30),
-
-            // 🎫 Dummy Buy Ticket Button
-            Center(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.redAccent,
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+            actions: [
+              IconButton(icon: const Icon(Icons.bookmark_border, color: Colors.white), onPressed: () {}),
+              IconButton(icon: const Icon(Icons.share, color: Colors.white), onPressed: () {}),
+            ],
+            flexibleSpace: FlexibleSpaceBar(
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  /// ✅ FIXED → Local asset image instead of network
+                  Image.asset(
+                    data['bannerImage'] ?? '',
+                    fit: BoxFit.cover,
                   ),
-                ),
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Ticket purchase feature coming soon!"),
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withOpacity(0.7),
+                          Colors.black,
+                        ],
+                      ),
                     ),
-                  );
-                },
-                child: const Text(
-                  "Buy Tickets",
-                  style: TextStyle(fontSize: 16, color: Colors.white),
-                ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (data['genres'] != null) _buildGenreTags(data['genres']),
+                  const SizedBox(height: 16),
+
+                  Text(
+                    data['title'] ?? 'Untitled Movie',
+                    style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  Text(
+                    '${data['certificate']} • ${data['language']} • ${data['duration']}',
+                    style: TextStyle(color: Colors.grey[400], fontSize: 14),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  Text(
+                    data['synopsis'] ?? 'No synopsis available.',
+                    style: TextStyle(color: Colors.grey[300], fontSize: 14, height: 1.4),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  if (data['cast'] != null) _buildCastSection(data['cast']),
+                  const SizedBox(height: 30),
+
+                  _buildBookButton(),
+                  const SizedBox(height: 40),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  String _getMonthName(int month) {
-    const months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec"
-    ];
-    return months[month - 1];
+  Widget _buildGenreTags(List genres) {
+    return Wrap(
+      spacing: 8,
+      children: genres.map((genre) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: Colors.white12,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Text(
+            genre,
+            style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildCastSection(List cast) {
+    return SizedBox(
+      height: 100,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: cast.length,
+        itemBuilder: (context, index) {
+          final member = cast[index];
+          return Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: Column(
+              children: [
+                CircleAvatar(
+                  radius: 32,
+                  backgroundColor: Colors.grey[800],
+                  backgroundImage: NetworkImage(member['image']),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  member['name'],
+                  style: const TextStyle(color: Colors.white, fontSize: 12),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildBookButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: () {},
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.red[600],
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+        child: const Text(
+          'Select Seats',
+          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
   }
 }
