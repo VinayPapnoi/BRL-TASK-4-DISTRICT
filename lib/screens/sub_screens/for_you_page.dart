@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import '../movies/movie_data.dart';
 import '../movies/movie_detail_screen.dart';
+import '../events/event_data.dart';
+import '../events/event_detail_screen.dart';
+import '../dining/dining_data.dart';
+import '../dining/dining_detail_screen.dart';
 
 class ForYouPage extends StatelessWidget {
   const ForYouPage({Key? key}) : super(key: key);
@@ -18,8 +22,6 @@ class ForYouPage extends StatelessWidget {
           children: [
             const SizedBox(height: 10),
 
-            // "IN THE SPOTLIGHT" Heading
-            // Spotlight Banner Instead of Text
             _buildBannerImage('assets/images/spotlight_banner.png'),
 
             const SizedBox(height: 20),
@@ -39,11 +41,12 @@ class ForYouPage extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // // Horizontal Scrolling Event List
-            // _buildHorizontalEventList(screenWidth),
+            _buildBannerImage('assets/images/foodie.png'),
 
-            // const SizedBox(height: 20),
-            _buildBannerImage('assets/images/blockbuster.png'),
+            const SizedBox(height: 20),
+
+            // Dining Carousel
+            _buildDiningCarousel(context),
 
             const SizedBox(height: 40),
           ],
@@ -55,50 +58,11 @@ class ForYouPage extends StatelessWidget {
   /// Main Spotlight Carousel (Full-width cards)
   Widget _buildSpotlightCarousel(BuildContext context, double screenWidth) {
     final PageController controller = PageController(
-      viewportFraction: 0.85, // Cards take 85% of screen width
+      viewportFraction: 0.85,
       initialPage: 1000,
     );
 
-    final List<Map<String, dynamic>> spotlightEvents = [
-      {
-        'title': 'Mon, 18 Dec, 1:30 PM',
-        'subtitle': 'ISL 2023-24 2025 | Lionel Messi | Delhi',
-        'image': 'assets/images/messi_event.jpg',
-        'offer': 'Pay only 50% to reserve your tickets',
-        'hasOffer': true,
-      },
-      {
-        'title': 'Sat, 25 Nov, 8:00 PM',
-        'subtitle':
-            'Rolling Loud India | Hip-Hop Festival | Karan Aujla, Central Cee',
-        'image': 'assets/images/rolling.jpeg',
-        'offer': 'Early bird discount - 30% off',
-        'hasOffer': true,
-      },
-      {
-        'title': 'Fri, 15 Dec, 7:00 PM',
-        'subtitle': 'PKL 2025: Final',
-        'image': 'assets/images/PKL.jpeg',
-        'offer': 'Buy 2 Get 1 Free',
-        'hasOffer': true,
-      },
-      {
-        'title': 'Sun, 10 Dec, 5:30 PM',
-        'subtitle': 'Haloween Party at Noide Social | Delhi NCR',
-        'image': 'assets/images/hell.jpg',
-        'offer': null,
-        'hasOffer': false,
-      },
-      {
-        'title': 'Wed, 20 Dec, 6:00 PM',
-        'subtitle': 'Enrique Iglesias Live in Concert - New Show',
-        'image': 'assets/images/enrique.jpg',
-        'offer': 'Limited seats available',
-        'hasOffer': true,
-      },
-    ];
-
-    final total = spotlightEvents.length;
+    final total = sampleEvents.length;
 
     return SizedBox(
       height: 450,
@@ -106,14 +70,14 @@ class ForYouPage extends StatelessWidget {
         controller: controller,
         physics: const BouncingScrollPhysics(),
         itemBuilder: (context, index) {
-          final event = spotlightEvents[index % total];
+          final event = sampleEvents[index % total];
 
           return GestureDetector(
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Selected: ${event['subtitle']}'),
-                  behavior: SnackBarBehavior.floating,
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EventDetailScreen(eventData: event),
                 ),
               );
             },
@@ -173,7 +137,7 @@ class ForYouPage extends StatelessWidget {
                     ),
 
                     // Offer Badge (if available)
-                    if (event['hasOffer'])
+                    if (event['offer'] != null)
                       Positioned(
                         bottom: 100,
                         left: 16,
@@ -224,7 +188,7 @@ class ForYouPage extends StatelessWidget {
                           children: [
                             // Time/Date
                             Text(
-                              event['title']!,
+                              event['dateTime']!,
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 14,
@@ -238,7 +202,7 @@ class ForYouPage extends StatelessWidget {
                               children: [
                                 Expanded(
                                   child: Text(
-                                    event['subtitle']!,
+                                    event['title']!,
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 16,
@@ -369,95 +333,166 @@ class ForYouPage extends StatelessWidget {
     );
   }
 
-  /// Horizontal Scrolling Event List
-  Widget _buildHorizontalEventList(double screenWidth) {
-    final List<Map<String, String>> events = [
-      {'title': 'Music Festival', 'image': 'assets/images/event_music.jpg'},
-      {'title': 'Stand-up Comedy', 'image': 'assets/images/event_comedy.jpg'},
-      {'title': 'Food Festival', 'image': 'assets/images/event_food.jpg'},
-      {'title': 'Tech Summit', 'image': 'assets/images/event_tech.jpg'},
-    ];
+  /// Dining Carousel
+  Widget _buildDiningCarousel(BuildContext context) {
+    final PageController controller = PageController(
+      viewportFraction: 0.75,
+      initialPage: 1000,
+    );
+    final total = sampleDining.length;
 
     return SizedBox(
-      height: 230,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
+      height: 320,
+      child: PageView.builder(
+        controller: controller,
         physics: const BouncingScrollPhysics(),
-        itemCount: events.length,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
         itemBuilder: (context, index) {
-          final event = events[index];
+          final restaurant = sampleDining[index % total];
 
-          return Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: _buildEventBox(
-              imagePath: event['image']!,
-              title: event['title']!,
-              width: screenWidth * 0.35,
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      DiningDetailScreen(restaurantData: restaurant),
+                ),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    // Restaurant Image
+                    Image.asset(
+                      restaurant['image']!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        color: Colors.grey[800],
+                        child: const Icon(
+                          Icons.broken_image,
+                          color: Colors.white54,
+                          size: 50,
+                        ),
+                      ),
+                    ),
+
+                    // Gradient Overlay
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withOpacity(0.6),
+                            Colors.black.withOpacity(0.9),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          stops: const [0.4, 0.7, 1.0],
+                        ),
+                      ),
+                    ),
+
+                    // Restaurant Details at Bottom
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Restaurant Name
+                            Text(
+                              restaurant['name']!,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 6),
+
+                            // Cuisine Type
+                            Text(
+                              restaurant['cuisine']!,
+                              style: TextStyle(
+                                color: Colors.grey[300],
+                                fontSize: 13,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 8),
+
+                            // Rating and Distance Row
+                            Row(
+                              children: [
+                                // Rating
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 3,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.green,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        restaurant['rating'].toString(),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 2),
+                                      const Icon(
+                                        Icons.star,
+                                        color: Colors.white,
+                                        size: 12,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+
+                                // Distance
+                                Icon(
+                                  Icons.location_on,
+                                  color: Colors.grey[400],
+                                  size: 14,
+                                ),
+                                const SizedBox(width: 2),
+                                Text(
+                                  restaurant['distance']!,
+                                  style: TextStyle(
+                                    color: Colors.grey[400],
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           );
         },
-      ),
-    );
-  }
-
-  /// Event Box Widget
-  Widget _buildEventBox({
-    required String imagePath,
-    required String title,
-    required double width,
-  }) {
-    return Container(
-      width: width,
-      decoration: BoxDecoration(
-        color: Colors.grey[900],
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade800, width: 1.2),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Event Image (Local Asset)
-            Expanded(
-              child: Image.asset(
-                imagePath,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                errorBuilder: (context, error, stackTrace) =>
-                    const Icon(Icons.broken_image, color: Colors.white70),
-              ),
-            ),
-
-            // Title + Bookmark
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-              color: Colors.black87,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      title,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                    ),
-                  ),
-                  const Icon(
-                    Icons.bookmark_border,
-                    color: Colors.white70,
-                    size: 20,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
