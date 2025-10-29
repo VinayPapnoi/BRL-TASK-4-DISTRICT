@@ -368,7 +368,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
         onPressed: () {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Proceeding to ticket booking...'),
+              content: Text('Work in progress (Sorry Sir)'),
               backgroundColor: Color(0xFF6366F1),
             ),
           );
